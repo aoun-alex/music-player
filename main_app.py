@@ -8,6 +8,7 @@ from abc import ABC, abstractmethod
 
 # Function to download audio from YouTube using yt-dlp
 def download_audio(url, path):
+    print(f"Starting download for {url}...")
     subprocess.run([
         'yt-dlp',
         '-f', 'bestaudio',
@@ -27,7 +28,7 @@ class Observer(ABC):
 
 
 # Observable class for implementing observer pattern
-class Observable:  #TODO notify the user when a song is downloaded
+class Observable: #TODO notify the user when a song is downloaded
     def __init__(self):
         self._observers = []
 
@@ -49,19 +50,16 @@ class ButtonCommand(ABC):
         pass
 
 
-# Concrete command class for downloading songs
 class DownloadSongCommand(ButtonCommand):
     def execute(self):
         download_song()
 
 
-# Concrete command class for playing songs
 class PlaySongCommand(ButtonCommand):
     def execute(self):
         play_song()
 
 
-# Concrete command class for exiting the application
 class ExitCommand(ButtonCommand):
     def execute(self):
         root.quit()
@@ -77,6 +75,8 @@ class ButtonFactory:
             return PlaySongCommand()
         elif type == "Exit":
             return ExitCommand()
+        else:
+            raise ValueError("Invalid button type")
 
 
 # Decorator function to print start and end of download
@@ -93,22 +93,27 @@ def download_decorator(func): #TODO: remove this soon
 # Function to download a song
 @download_decorator
 def download_song():
+    # Initialize variables and GUI elements
     results = []
     listbox = Listbox()
 
-    # Function to handle song selection
+    # Function to handle song selection from listbox
     def on_song_select(event):
+        print("Song selected...")
         nonlocal results
         widget = event.widget
         selection = widget.curselection()
         video_id = results[selection[0]]['videoId']
+        print(f"Selected video ID: {video_id}")
         video_url = f"https://www.youtube.com/watch?v={video_id}"
+        print(f"Video URL: {video_url}")
         download_path = r"C:\Users\alexa\Documents\GitHub\music-player\music"
+        print(f"Download path: {download_path}")
         download_audio(video_url, download_path)
         download_window.destroy()
         messagebox.showinfo("Download Complete", "The song has been downloaded successfully!")
 
-    # Function to submit the query and display results
+    # Function to submit search query and display results
     def submit(event=None):
         nonlocal results
         nonlocal listbox
@@ -128,12 +133,13 @@ def download_song():
     entry.bind('<Return>', submit)
     listbox = Listbox(download_window, width=60)
     listbox.pack()
+    listbox.bind('<<ListboxSelect>>', on_song_select)
     CTkButton(download_window, text="Submit", command=submit).pack()
 
 
-# Function to play a song
-def play_song():
-    directory = r"C:\Users\alexa\Documents\GitHub\music-player\music"  #TODO: implement flexible directory the user can pick
+# Function to play a downloaded song
+def play_song():  # TODO: implement flexible directory instead of hardcoded
+    directory = r"C:\Users\alexa\Documents\GitHub\music-player\music"
     songs = get_songs(directory)
     create_gui(songs, directory)
 
@@ -163,5 +169,6 @@ def main():
     main_gui.create_main_gui()
 
 
+# Entry point of the program
 if __name__ == "__main__":
     main()

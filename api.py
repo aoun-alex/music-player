@@ -38,8 +38,6 @@ class APIFactory:
     def create_api(type):
         if type == "Search":
             return SearchCommand()
-        else:
-            raise ValueError("Invalid API type")
 
 
 # Function to perform a search using the YouTube API
