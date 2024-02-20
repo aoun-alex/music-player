@@ -1,10 +1,12 @@
-from tkinter import Tk, Button, Toplevel, Label, Entry, Listbox, END, messagebox
+from customtkinter import CTkButton, CTkEntry
+from tkinter import Tk, Toplevel, Label, END, messagebox, Listbox
 from song_menu import create_gui, get_songs
 from api import search
 import subprocess
 from abc import ABC, abstractmethod
 
 
+# Function to download audio from YouTube using yt-dlp
 def download_audio(url, path):
     subprocess.run([
         'yt-dlp',
@@ -17,13 +19,15 @@ def download_audio(url, path):
     ])
 
 
+# Abstract class for observers
 class Observer(ABC):
     @abstractmethod
     def update(self, *args, **kwargs):
         pass
 
 
-class Observable:
+# Observable class for implementing observer pattern
+class Observable:  #TODO notify the user when a song is downloaded
     def __init__(self):
         self._observers = []
 
@@ -38,27 +42,32 @@ class Observable:
             observer.update(*args, **kwargs)
 
 
+# Abstract class for button commands
 class ButtonCommand(ABC):
     @abstractmethod
     def execute(self):
         pass
 
 
+# Concrete command class for downloading songs
 class DownloadSongCommand(ButtonCommand):
     def execute(self):
         download_song()
 
 
+# Concrete command class for playing songs
 class PlaySongCommand(ButtonCommand):
     def execute(self):
         play_song()
 
 
+# Concrete command class for exiting the application
 class ExitCommand(ButtonCommand):
     def execute(self):
         root.quit()
 
 
+# Factory class for creating button commands
 class ButtonFactory:
     @staticmethod
     def create_button(type):
@@ -68,11 +77,10 @@ class ButtonFactory:
             return PlaySongCommand()
         elif type == "Exit":
             return ExitCommand()
-        else:
-            raise ValueError("Invalid button type")
 
 
-def download_decorator(func):
+# Decorator function to print start and end of download
+def download_decorator(func): #TODO: remove this soon
     def wrapper(*args, **kwargs):
         print("Starting download...")
         result = func(*args, **kwargs)
@@ -82,11 +90,13 @@ def download_decorator(func):
     return wrapper
 
 
+# Function to download a song
 @download_decorator
 def download_song():
-    results = []  # Define results here
-    listbox = Listbox()  # Define listbox here
+    results = []
+    listbox = Listbox()
 
+    # Function to handle song selection
     def on_song_select(event):
         nonlocal results
         widget = event.widget
@@ -98,47 +108,54 @@ def download_song():
         download_window.destroy()
         messagebox.showinfo("Download Complete", "The song has been downloaded successfully!")
 
-    def submit(event=None):  # event parameter added
+    # Function to submit the query and display results
+    def submit(event=None):
         nonlocal results
-        nonlocal listbox  # Make listbox nonlocal
+        nonlocal listbox
         query = entry.get()
         results = search(query)
-        listbox.delete(0, END)  # clear the listbox
+        listbox.delete(0, END)
         for result in results[:5]:
             listbox.insert(END, result['title'])
 
+    # Creating GUI for downloading a song
     download_window = Toplevel(root)
     download_window.geometry("500x500")
     Label(download_window, text="Enter a song title: ").pack()
-    entry = Entry(download_window, width=60)
+    entry = CTkEntry(download_window, width=200, height=25)
+    entry.place(x=0, y=0)
     entry.pack()
-    entry.bind('<Return>', submit)  # bind Enter key to submit function
-    listbox = Listbox(download_window, width=60)  # Initialize listbox with download_window as parent
+    entry.bind('<Return>', submit)
+    listbox = Listbox(download_window, width=60)
     listbox.pack()
-    Button(download_window, text="Submit", command=submit).pack()
+    CTkButton(download_window, text="Submit", command=submit).pack()
 
 
+# Function to play a song
 def play_song():
-    directory = r"C:\Users\alexa\Documents\GitHub\music-player\music"
+    directory = r"C:\Users\alexa\Documents\GitHub\music-player\music"  #TODO: implement flexible directory the user can pick
     songs = get_songs(directory)
     create_gui(songs, directory)
 
 
+# Main GUI class that acts as an observer
 class MainGui(Observer):
     def update(self, *args, **kwargs):
-        pass  # Update song list when a song finishes downloading
+        pass
 
+    # Function to create the main GUI
     def create_main_gui(self):
         global root
         root = Tk()
         root.geometry("500x500")
-        Button(root, text="Download new song from YouTube",
-               command=ButtonFactory.create_button("Download").execute).pack()
-        Button(root, text="Play a downloaded song", command=ButtonFactory.create_button("Play").execute).pack()
-        Button(root, text="Exit", command=ButtonFactory.create_button("Exit").execute).pack()
+        CTkButton(root, text="Download new song from YouTube",
+                  command=ButtonFactory.create_button("Download").execute).pack()
+        CTkButton(root, text="Play a downloaded song", command=ButtonFactory.create_button("Play").execute).pack()
+        CTkButton(root, text="Exit", command=ButtonFactory.create_button("Exit").execute).pack()
         root.mainloop()
 
 
+# Main function to run the application
 def main():
     main_gui = MainGui()
     download_song = Observable()

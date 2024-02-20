@@ -3,10 +3,11 @@ import vlc
 from tkinter import Tk, Listbox, Button, END
 from abc import ABC, abstractmethod
 
-player = None
+player = None  # Variable to hold the VLC media player instance
 
 
 def get_songs(directory):
+    # Function to get a list of .mp3 files in a given directory.
     songs = []
     for file in os.listdir(directory):
         if file.endswith(".mp3"):
@@ -15,12 +16,14 @@ def get_songs(directory):
 
 
 class ButtonCommand(ABC):
+    # Abstract base class for button command objects.
     @abstractmethod
     def execute(self):
         pass
 
 
 class PlaySongCommand(ButtonCommand):
+    # Concrete command class for playing a song.
     def __init__(self, song_path):
         self.song_path = song_path
 
@@ -31,6 +34,7 @@ class PlaySongCommand(ButtonCommand):
 
 
 class PauseSongCommand(ButtonCommand):
+    # Concrete command class for pausing the currently playing song.
     def execute(self):
         global player
         if player:
@@ -38,6 +42,7 @@ class PauseSongCommand(ButtonCommand):
 
 
 class ResumeSongCommand(ButtonCommand):
+    # Concrete command class for resuming the currently paused song.
     def execute(self):
         global player
         if player:
@@ -45,6 +50,7 @@ class ResumeSongCommand(ButtonCommand):
 
 
 class StopSongCommand(ButtonCommand):
+    # Concrete command class for stopping the currently playing song.
     def execute(self):
         global player
         if player:
@@ -52,6 +58,7 @@ class StopSongCommand(ButtonCommand):
 
 
 class ButtonFactory:
+    # Factory class to create button command objects.
     @staticmethod
     def create_button(type, song_path=None):
         if type == "Play":
@@ -62,27 +69,18 @@ class ButtonFactory:
             return ResumeSongCommand()
         elif type == "Stop":
             return StopSongCommand()
-        else:
-            raise ValueError("Invalid button type")
 
-
-def song_decorator(func):
-    def wrapper(*args, **kwargs):
-        print("Starting song operation...")
-        result = func(*args, **kwargs)
-        print("Song operation finished!")
-        return result
-
-    return wrapper
 
 
 class Observer(ABC):
+    # Abstract base class for observer objects.
     @abstractmethod
     def update(self, *args, **kwargs):
         pass
 
 
 class Observable:
+    # Observable class to manage observers and notifications.
     def __init__(self):
         self._observers = []
 
@@ -98,6 +96,7 @@ class Observable:
 
 
 def on_song_select(event, directory):
+    # Callback function for song selection event.
     global player
     widget = event.widget
     selection = widget.curselection()
@@ -114,6 +113,7 @@ def on_song_select(event, directory):
 
 
 def create_gui(songs, directory):
+    # Function to create the GUI.
     root = Tk()
     root.geometry("400x500")
     listbox = Listbox(root, width=60)
