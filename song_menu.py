@@ -2,6 +2,7 @@ import os
 import vlc
 from tkinter import Tk, Listbox, Button, END
 
+#Prototype
 
 def get_songs(directory):
     # Get a list of songs in the specified directory.

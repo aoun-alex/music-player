@@ -5,6 +5,7 @@ from customtkinter import CTkButton, CTkEntry
 from api import search
 from abc import ABC, abstractmethod
 
+#Abstract Factory
 
 class AbstractFactory(ABC):
     # Abstract factory class
