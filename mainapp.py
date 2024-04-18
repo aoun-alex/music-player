@@ -6,8 +6,8 @@ class MainApp:
     def __init__(self):
         self.root = tk.Tk()
         self.root.geometry("500x500")
-        self.root.title("Alex Music & Everything App")
-        tk.Label(self.root, text="Welcome to A's music & everything app. \n Please pick an option:", font=("Helvetica", 14)).pack()
+        self.root.title("Music App")
+        tk.Label(self.root, text="Please pick an option:", font=("Helvetica", 14)).pack()
 
         tk.Button(self.root, text="YouTube Importer", command=self.open_youtube_importer).pack()
         tk.Button(self.root, text="Radio Player", command=self.open_radio_player).pack()

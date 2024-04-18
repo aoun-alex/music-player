@@ -1,7 +1,7 @@
 import tkinter as tk
 import vlc
 import radio_search_function as rsf
-from radio_favorites import FavoritesManager, JSONStorageManager
+from radio_favorites import FavoritesManager, JSONStorageProxy
 from recently_played import RecentlyPlayed, StationFactory
 
 #Facade
@@ -37,7 +37,7 @@ class RadioPlayer:
         self.root = tk.Tk()  # Creating the main Tkinter window
         self.root.geometry("500x500")
         self.root.title("Radio Player")
-        self.storage_manager = JSONStorageManager('favorites.json')  # Creating an instance of JSONStorageManager for favorites
+        self.storage_manager = JSONStorageProxy('favorites.json')  # Creating an instance of JSONStorageManager for favorites
         self.favorites_manager = FavoritesManager(self.storage_manager)  # Creating FavoritesManager instance
         self.station_factory = StationFactory()  # Creating an instance of StationFactory
         self.recently_played_manager = RecentlyPlayed(self.station_factory)  # Creating RecentlyPlayed instance
