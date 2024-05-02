@@ -1,6 +1,7 @@
 import tkinter as tk
 from radio_player import RadioFacade
 from youtube_importer import GuiBuilder
+from recommender_main import start_main_menu
 
 class MainApp:
     def __init__(self):
@@ -11,6 +12,7 @@ class MainApp:
 
         tk.Button(self.root, text="YouTube Importer", command=self.open_youtube_importer).pack()
         tk.Button(self.root, text="Radio Player", command=self.open_radio_player).pack()
+        tk.Button(self.root, text="AI Recommender", command=self.ai_recommender).pack()  # New button
         tk.Button(self.root, text="Quit", command=self.root.quit).pack()
 
     def open_youtube_importer(self):
@@ -18,6 +20,9 @@ class MainApp:
 
     def open_radio_player(self):
         RadioFacade().run()
+
+    def ai_recommender(self):  # New method
+        start_main_menu()
 
     def run(self):
         self.root.mainloop()

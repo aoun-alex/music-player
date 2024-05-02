@@ -4,6 +4,8 @@ import subprocess
 
 # State
 
+
+
 # Define a base State class for managing different application states.
 class State:
     def handle(self):
@@ -69,8 +71,8 @@ class MainMenu:
         self.state.handle(self)
 
 
-# Main tkinter setup.
-root = tk.Tk()
-root.geometry("500x500")
-app = MainMenu(root)
-root.mainloop()
+def start_main_menu():
+    new_window = tk.Toplevel()
+    new_window.geometry("500x500")
+    app = MainMenu(new_window)
+    new_window.mainloop()
